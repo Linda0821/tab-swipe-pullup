@@ -1,0 +1,217 @@
+<html>  
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>JS tab组件</title>
+    <link rel="stylesheet" type="text/css" href="css/tabs-competents-1.css">  
+    <style>
+
+        #Tabs {
+            width:100%;
+            height: 100%;
+            /* overflow: hidden; */           
+        }
+        .TabControl .tab-head ul li.tab-head-item.active{    
+         border-bottom: solid 2px #00aeff;      
+        } 
+        html,
+        body {
+            width:100%;
+            height: 100%;
+            overflow-x:hidden;
+        }
+    </style>  
+</head>  
+  
+<body> 
+
+<div id="Tabs"></div> 
+<script src="js/jquery.js"></script>
+<script src="js/tabs-competents-1.js"></script>
+
+<script lang="javascript"> 
+    var objdata={};
+
+    objdata=getObjData();
+
+    window.onload=function() {
+        //获取tab选项卡标题栏值
+        var arr = getTabItemValue();
+
+        //创建tab组件
+        var tabControl = new TabControl({
+            "id":"Tabs",
+            "is_scrollTabHead":true,
+            "is_swipeTab":true,
+            "tabItemName":arr
+         },getTabContent);
+
+        classScrolling();
+
+    }
+    /**  
+     * 插入TAB页  
+     * param{idx},插入位置  
+     * param{title},TAB页标题  
+     *  
+     */
+    function getTabContent(pages,idx,isRender) {//回调函数会在选中tab标题栏是回调
+        console.info(pages);
+        console.info(idx+"****isRender***"+isRender);
+        if(isRender){
+            firstRenderTabContent(pages,idx);
+        }
+        
+                           
+    }
+    function getTabItemValue() {
+        var arr= ["新闻","娱乐新闻","社会","视屏","体育","天气","新闻","娱乐新闻","体育","天气"];
+        return arr;
+    }
+    function getObjData(){
+        var objdata_ajax; 
+        $.ajax({
+             type: 'GET',
+             url: 'json/update.json',
+             async: false,   
+             dataType: 'json',
+             success: function(data){
+                objdata_ajax = data.lists;                   
+                console.info(objdata_ajax.length);
+                //console.log(Object.keys(objdata[0]));   //参数idx表示点击选中的tab的index值                                      
+             },
+             error: function(xhr, type){
+                 console.info('Ajax error!');
+             }               
+        });
+        console.info(objdata_ajax);
+        return objdata_ajax;
+    }
+    
+    function firstRenderTabContent(pages,idx){
+        if  (parseInt(idx) >= 0) {
+                var content_ul = document.createElement("ul");
+                var html = "";
+                console.info(pages[idx].firstChild);
+                if( pages[idx].firstChild == null){
+                    pages[idx].appendChild(content_ul); 
+                } else{
+                    console.info("已经添加过ul");
+                }                          
+                var arr = [];
+                for (var i = 0; i < objdata.length; i++) {
+                    arr[i] = '<li class="list"><a href="javascript:void(0)"><div class="li_left"><img src="' + objdata[i].pic + '"></div>' + '<div class="li_right"><p class="li-title">' +idx+'***'+ objdata[i].title + '</p><span class="li-time">' + objdata[i].date + '</span>diyigetab</div>diyigetab</a>diyigetab</li>';
+                }
+                html = arr.join("");
+                //content_ul.innerHTML=html;
+                console.info( "list length= "+pages[idx].firstChild.childNodes.length);
+                if ( pages[idx].firstChild.childNodes.length === 0){                    
+                    pages[idx].firstChild.innerHTML=html;
+                } 
+                //特定tab里填充内容
+                
+            }
+    }
+    function classScrolling(){
+        var startx = 0, movex = 0,startLeft = 0;
+        var lastMoveStart = 0, lastMoveTime = 0;
+        var _w = window.innerWidth, _width = $(".tab-scroll").width();
+        $(".tab-head").on("touchstart",function(e){
+            _width = $(".tab-scroll").width();
+            // 记录开始滑动
+            startx = e.targetTouches[0].clientX;
+            startLeft = $(".tab-scroll").position().left;
+            // 惯性滑动
+            stopClassInertia = true;
+            lastMoveStart = startx ;
+            lastMoveTime = Date.now();
+        });
+        $(".tab-head").on("touchmove",function(e){
+            // 滑动
+            var _x = e.targetTouches[0].clientX;
+            movex = _x - startx;
+            var translate_x = startLeft - 0 + movex;
+            if(_width > _w){ // 分类多
+                translate_x = translate_x > _w/4 ? _w/4 : ( translate_x < -(_width - _w + _w/4) ? -(_width - _w + _w/4) : translate_x);
+            }else { // 分类少
+                translate_x = 0;
+            }
+
+            $(".tab-scroll").css({
+                "transition":"all 0s 0s ease",
+                "-webkit-transition":"all 0s 0s ease",
+                "transform":"translte3d("+translate_x+"px,0px,0px)",
+                "-webkit-transform":"translate3d("+translate_x+"px,0px,0px)"
+            });
+            // 惯性
+            stopClassInertia = true;
+            var _now = Date.now();
+            if(_now - lastMoveTime > 300){
+                lastMoveStart = _x;
+                lastMoveTime = _now;
+            }
+        });
+        $(".tab-head").on("touchend",function(e){
+            // 惯性滑动
+            var _left = $(".tab-scroll").position().left,
+                _now = Date.now(),
+                v = (e.changedTouches[0].clientX - lastMoveStart) / (_now - lastMoveTime),
+                a = 0.001, dir = v > 0 ? -1 : 1;
+            a = a * dir;
+            stopClassInertia = false;
+            if(_width > _w){
+                inertiaMove();
+            }
+            function inertiaMove(){
+                if(stopClassInertia){
+                    return;
+                }
+                var _duration = Date.now() - _now,
+                    _nowV = v + a * _duration,
+                    _x = (v+_nowV)/2 * _duration;
+                if(-dir*_nowV < 0){
+                    var _l = $(".tab-scroll").position().left,
+                        _end = _l > 0 ? 0 : ( _l < -( _width - _w ) ? -(_width - _w) : _l );
+                    $(".tab-scroll").css({
+                        "transition":"all .3s 0s ease",
+                        "-webkit-transition":"all .3s 0s ease",
+                        "transform":"translte3d("+_end+"px,0px,0px)",
+                        "-webkit-transform":"translate3d("+_end+"px,0px,0px)"
+                    });
+                    return;
+                };
+                var _translate = _left + _x;
+                _translate = _translate > _w/4 ? _w/4 : (_translate < -(_width  - 3 * _w / 4) ? -(_width - 3 * _w / 4) : _translate);
+                $(".tab-scroll").css({
+                    "transition":"all 0s 0s ease",
+                    "-webkit-transition":"all 0s 0s ease",
+                    "transform":"translte3d("+_translate+"px,0px,0px)",
+                    "-webkit-transform":"translate3d("+_translate+"px,0px,0px)"
+                });
+                if(_translate >= _w/4){
+                    $(".tab-scroll").css({
+                        "transition":"all .3s 0s ease",
+                        "-webkit-transition":"all .3s 0s ease",
+                        "transform":"translte3d("+0+"px,0px,0px)",
+                        "-webkit-transform":"translate3d("+0+"px,0px,0px)"
+                    });
+                    return;
+                }else if(_translate <= -(_width - _w)){
+                    $(".tab-scroll").css({
+                        "transition":"all .3s 0s ease",
+                        "-webkit-transition":"all .3s 0s ease",
+                        "transform":"translte3d("+(-(_width - _w))+"px,0px,0px)",
+                        "-webkit-transform":"translate3d("+(-(_width - _w))+"px,0px,0px)"
+                    });
+                    return;
+                }
+                setTimeout(inertiaMove,10);
+            }
+        });
+    };
+    
+
+</script>  
+</body>  
+  
+</html>  

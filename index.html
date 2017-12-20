@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />	
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="css/tabs-competents-1.css">
+	<style>
+	     #Tabs {
+            width:100%;
+            height:100%; 
+            overflow: hidden;
+        }
+	</style>
+</head>
+<body>
+	<!-- // div>h1{我是首页}+div+p+bq+h$.class$[title=item$]{我是第$标签}*3-->
+	<div id="Tabs" class="TabControl">
+		<div class="tab-head">
+			<div class="tab-scroll">
+				<ul>
+					<li class="tab-head-item active" id="class0"><a href="javascript:void(0)">数学</a></li>
+					<li class="tab-head-item" id="class1"><a href="javascript:void(0)">语文</a></li>
+					<li class="tab-head-item" id="class2"><a href="javascript:void(0)">英语</a></li>
+					<li class="tab-head-item" id="class3"><a href="javascript:void(0)">体育</a></li>
+					<li class="tab-head-item" id="class4"><a href="javascript:void(0)">音乐</a></li>
+					<li class="tab-head-item" id="class5"><a href="javascript:void(0)">美术</a></li>
+					<li class="tab-head-item" id="class6"><a href="javascript:void(0)">计算机</a></li>
+					<div class="line"></div>
+				</ul>
+			</div>
+		</div>
+		<div class="tab-content">
+			<div class="tab-content-item active" data-idx="0"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="1"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="2"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="3"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="4"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="5"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="6"><div class="tab-content-scroll"></div></div>
+		</div>	
+	</div>
+	<script src="js/jQuery.js"></script>
+	<script src="js/tabs-competents-exit.js"></script>
+	<script>
+	var isload=false;
+	var objdata={};
+    objdata=getObjData();
+	window.onload=function() {
+    /** 
+     * 创建tab组件
+     * id string tab的包裹容器（id） 必须
+     * is_swipe boolean tabcontent是否可以滑动 
+     * tabItemName arr  tab标题的文字 必须
+     * classesImgURL arr  标题处icon链接 存在则有icon图标
+     */
+    var tabControl = new TabControl({
+        "id":"Tabs",
+        "is_swipe":true
+    },getTabContent);
+  }
+    function getTabContent(pages,idx,isRender) {//回调函数会在选中tab标题栏是回调
+        console.info("****返回的当前的tab***"+idx);
+        console.info(pages);
+        console.info(isRender);
+        if(isRender&&(isRender.isClickLoad||isRender.isSlideLoad) ){
+            firstRenderTabContent(pages,idx);
+        } else if(isRender&&isRender.isPullLoad){
+            
+            $(".tab-content-item.active").find(".pull-bottom-wrapper").show();
+            if(!isload){
+                setTimeout(function() {
+                console.info("1s后执行");
+                renderHtml(pages,idx,function(){
+                  $(".tab-content-item.active").find(".pull-bottom-wrapper").hide();
+                  isload=false;
+                },false)
+            }, 1000);
+            }
+
+        }      
+                           
+    }
+
+    function getObjData(){
+        var objdata_ajax; 
+        $.ajax({
+             type: 'GET',
+             url: 'json/update.json',
+             async: false,   
+             dataType: 'json',
+             success: function(data){
+                objdata_ajax = data.lists;                   
+                //console.info(objdata_ajax.length);
+                //console.log(Object.keys(objdata[0]));   //参数idx表示点击选中的tab的index值                                      
+             },
+             error: function(xhr, type){
+                 console.info('Ajax error!');
+             }               
+        });
+        //console.info(objdata_ajax);
+        return objdata_ajax;
+    }
+    
+    function firstRenderTabContent(pages,idx){
+       
+        //console.info($(pages[idx]).find(".tab-content-scroll").firstChild);
+        if( $(pages[idx]).find(".tab-content-scroll ul").length == 0){     
+          $(pages[idx]).find(".tab-content-scroll").append('<ul class="content_ul"><div class="pull-bottom-wrapper"><p class="pull-loading"><span></span></p></div></ul>');   
+          $(".tab-content-item.active").find(".pull-bottom-wrapper").show();
+            if(!isload){
+              setTimeout(function() {
+                  console.info("首次渲染，1s后执行");
+                  renderHtml(pages,idx,function(){
+                    $(".tab-content-item.active").find(".pull-bottom-wrapper").hide();
+                  },true)
+              }, 1000);
+            }
+        } else{
+            console.info("已经添加过ul");
+        } 
+        //特定tab里填充内容              
+    }
+    function renderHtml(pages,idx,fn,isFirst){
+        var $pages=$(pages[idx]).find(".tab-content-scroll");
+        var arr = [];
+        var len = objdata.length;
+        if(idx===3||idx===5){
+          len=len-2;
+        }else{
+          len=8;//重置
+        }
+        for (var i = 0; i < len; i++) {
+            arr[i] = '<li class="list"><a href="javascript:void(0)"><div class="li_left"><img src="' + objdata[i].pic + '"></div>' + '<div class="li_right"><p class="li-title">' +idx+'***'+ objdata[i].title + '</p><span class="li-time">' + objdata[i].date + '</span></div></a></li>';
+        }
+        html = arr.join("");
+
+        console.info( "list length= "+$(pages[idx]).find(".tab-content-scroll ul li").length);
+        if(!isFirst){
+          if($(pages[idx]).find(".tab-content-scroll ul li").length<=41){
+            $pages.find(".content_ul").prepend(html);
+          }else{
+            console.info("没数据了");
+          }
+          
+        }else {
+          if ($(pages[idx]).find(".tab-content-scroll ul li").length === 0){                    
+            $pages.find(".content_ul").prepend(html); 
+          }
+        }
+        if(fn){
+          fn();
+        }
+
+    }
+    </script>
+</body>
+</html>
+

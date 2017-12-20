@@ -1,0 +1,10 @@
+// pixels to rems 
+$designFontSize: 20px !default; //640px psd
+@function pxToRem($px) {
+  @return $px / $designFontSize * 1rem;
+}
+.ulli{
+	width: pxToRem(360px);
+	font-size:pxToRem(16px);
+	color: pink;
+}

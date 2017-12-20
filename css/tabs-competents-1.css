@@ -1,0 +1,300 @@
+@charset 'utf-8';
+/* 公共样式 */
+*
+{
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+}
+html,
+body
+{
+    width: 100%;/* ctrl+alt+y 打开调色板 */
+    height: 100%;
+
+    /* -webkit-animation-name: myfirst;animation-name: myfirst; *//* ctrl+alt+a 打开autoprefixer*/
+}
+/* @-webkit-keyframes myfirst
+{
+    from
+    {
+        background: red;
+    }
+    to
+    {
+        background: yellow;
+    }
+}
+@keyframes myfirst
+{
+    from
+    {
+        background: red;
+    }
+    to
+    {
+        background: yellow;
+    }
+} */
+.TabControl a
+{
+    cursor: default;
+    text-decoration: none;
+
+    color: #000;
+}
+
+.TabControl .tab-head
+{
+    z-index: 99;
+
+    overflow: hidden;
+
+    width: 100%;
+}
+
+/* tab表头部标题栏 */
+.TabControl .tab-head ul
+{
+    width: auto;
+    height: 45px;
+    margin: 0;
+    padding: 0;
+
+    background-color: #fff;
+}
+.TabControl .tab-head ul.tab-img-icon
+{
+    height: 55px;
+    margin-top: 8px;
+}
+
+.TabControl .tab-head ul li.tab-head-item
+{
+    display: inline-block;
+
+    margin: 0 5px;
+    padding: 0 10px;
+
+    list-style: none; /* 将默认的列表符号去掉 */
+
+    cursor: default;
+}
+.TabControl .tab-head ul li.tab-head-item a
+{
+    line-height: 42px;
+
+    display: inline-block;
+
+    height: 42px;
+    margin-right: 0;
+    margin-left: 0;
+
+    text-align: center;
+}
+.TabControl .tab-head ul.tab-img-icon li.tab-head-item a
+{
+    line-height: 52px;
+
+    height: 52px;
+}
+
+.TabControl .tab-head ul .active a
+{
+    color: #00aeff;
+}
+
+.TabControl .tab-head ul li.tab-head-item a .tab-icon img
+{
+    height: 18px;
+}
+
+.TabControl .tab-head ul.tab-img-icon li.tab-head-item a .tab-media-body
+{
+    line-height: 32px;
+
+    height: 32px;
+    /* margin-top: 5px; */
+}
+
+/* 各个tab内容栏 */
+.TabControl .tab-content
+{
+    overflow: hidden;
+
+    border-top: solid 1px #e0e0e0;
+}
+.TabControl .tab-content .tab-content-item
+{
+    position: relative;
+
+    display: inline-block;
+
+    height: 100%;
+
+    vertical-align: top;
+}
+.TabControl .tab-content .tab-content-item ul
+{
+    width: 100%;
+}
+.TabControl .tab-content .tab-content-item ul li.list
+{
+    overflow: hidden;
+
+    width: 100%;
+    height: 60px;
+    margin-bottom: 10px;
+
+    border-bottom: 1px solid #eee;
+}
+.TabControl .tab-content .tab-content-item ul li.list .li_left
+{
+    float: left;
+
+    width: 30%;
+    max-width: 100px;
+    height: 60px;
+}
+.TabControl .tab-content .tab-content-item ul li.list .li_right
+{
+    float: left;
+
+    width: 70%;
+    height: 60px;
+}
+.TabControl .tab-content .tab-content-item ul li.list  a
+{
+    display: inline-block;
+
+    width: 100%;
+    height: 60px;
+}
+.TabControl .tab-content .tab-content-item ul li.list .li_right .li-title
+{
+    font-size: 12px;
+
+    display:         box;
+    display: -webkit-box; /* Chrome 4+, Safari 3.1, iOS Safari 3.2+ */
+    display:    -moz-box; /* Firefox 17- */
+    display: -webkit-flex; /* Chrome 21+, Safari 6.1+, iOS Safari 7+, Opera 15/16 */
+    display:    -moz-flex; /* Firefox 18+ */
+    display: -ms-flexbox; /* IE 10 */
+    display:         flex; /* Chrome 29+, Firefox 22+, IE 11+, Opera 12.1/17/18, Android 4.4+ */
+    overflow: hidden;
+
+    height: 30px;
+    margin: 5px 0;
+
+    text-overflow: ellipsis;
+
+       -moz-box-orient: vertical;
+        -ms-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+.TabControl .tab-content .tab-content-item ul li.list .li_right .li-time
+{
+    font-size: 12px;
+    line-height: 20px;
+
+    display: block;
+
+    height: 20px;
+
+    text-align: left;
+}
+
+/*
+ *下拉刷新 
+ */
+.pull-bottom-wrapper
+{
+    z-index: 100;
+
+    display: none;
+
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    width: 100%;
+    height: 5.25rem;
+    padding-top: .875rem;
+
+    text-align: center;
+}
+.pull-bottom-wrapper:before
+{
+    position: absolute;
+    left: 50%;
+
+    display: block;
+
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: -.75rem;
+
+    content: '';
+    -webkit-animation-name: preloader-spin;
+            animation-name: preloader-spin;
+    -webkit-animation-duration: .7s;
+            animation-duration: .7s;
+    -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+
+    border: none;
+    background-color: #fff;
+    background-image: url(../img/loading.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    -webkit-box-shadow: none;
+            box-shadow: none;
+}
+
+@-webkit-keyframes preloader-spin
+{
+    0%
+    {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+    }
+    100%
+    {
+        -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}
+@keyframes preloader-spin
+{
+    0%
+    {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+    }
+    100%
+    {
+        -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}
+
+
+/* 新增样式 */
+.tab-scroll
+{
+    position: relative;
+}
+.line
+{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    height: 2.5px;
+
+    background: #00aeff;
+}

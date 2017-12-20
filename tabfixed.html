@@ -1,0 +1,172 @@
+
+
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>tab</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/tabs-competents-1.css">
+		<style>
+		     #Tabs {
+	            width:100%;
+	            height:100%; 
+	            overflow: hidden;
+	        }
+		</style>	
+	</head>
+
+	<body>
+	<div id="Tabs" class="TabControl">
+		<div class="tab-head">
+			<div class="tab-scroll">
+				<ul>
+					<li class="tab-head-item active" id="class0"><a href="javascript:void(0)">数学</a></li>
+					<li class="tab-head-item" id="class1"><a href="javascript:void(0)">语文</a></li>
+					<li class="tab-head-item" id="class2"><a href="javascript:void(0)">英语</a></li>
+					<li class="tab-head-item" id="class3"><a href="javascript:void(0)">体育</a></li>
+					<li class="tab-head-item" id="class4"><a href="javascript:void(0)">音乐</a></li>
+					<li class="tab-head-item" id="class5"><a href="javascript:void(0)">美术</a></li>
+					<li class="tab-head-item" id="class6"><a href="javascript:void(0)">计算机</a></li>
+					<div class="line"></div>
+				</ul>
+			</div>
+		</div>
+		<div class="tab-content">
+			<div class="tab-content-item active" data-idx="0"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="1"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="2"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="3"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="4"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="5"><div class="tab-content-scroll"></div></div>
+			<div class="tab-content-item" data-idx="6"><div class="tab-content-scroll"></div></div>
+		</div>	
+	</div>
+	<script src="js/jquery.js"></script>
+	<script>
+		var isload=false;
+		var objdata={};
+	    objdata=getObjData();
+		window.onload=function() {
+			firstRenderTabContent();
+			cssSet();
+			$("#"+idName+' .tab-head ul li').click(function() {
+	            console.info($(this).attr("id").substring(5));
+	            var id = $(this).attr("id").substring(5);
+	           /* me.slideTo(id, {
+	                "isClickLoad": true
+	            });
+	            centerClass(idName,id, w);*/
+	        });
+
+	   }
+	   	function cssSet() {
+	   		var idName="Tabs";
+	   		var tabHead = document.querySelectorAll("#"+idName+" .tab-head")[0],
+	        tabCotent = document.querySelectorAll("#"+idName+" .tab-content")[0],
+	        ul = document.querySelectorAll("#"+idName+" .tab-head .tab-scroll ul")[0],
+	        line = ul.querySelectorAll(".line")[0],
+	        headScroll = document.querySelectorAll("#"+idName+" .tab-head .tab-scroll")[0];
+
+	        var tabCount = document.querySelectorAll("#"+idName+" .tab-head .tab-scroll .tab-head-item").length;
+
+	   		var li_0={
+	            left: 0,
+	            right: 0
+	        };
+	        //初始化tab 表头的宽度
+	        var w_tabhead = 0;
+	        for (var i = 0; i < tabCount; i++) {
+	            var str_right = $(".tab-head .tab-scroll .tab-head-item").eq(i).css("margin-right").replace("px",""); 
+	            var str_left = $(".tab-head .tab-scroll .tab-head-item").eq(i).css("margin-left").replace("px",""); 
+	            if( i == 0 ){
+	               li_0.right = str_right;
+	               li_0.left = str_left;
+	            }
+	            w_tabhead = w_tabhead + parseInt($(".tab-head .tab-scroll .tab-head-item").eq(i).width())+parseInt(str_right)+parseInt(str_left);
+	            console.info(i + ", " + w_tabhead);
+	        }
+	        headScroll.setAttribute("style", "width:" + 530 + "px;");
+	        //headScroll.setAttribute("style", "width:" + 520 + "px;");
+
+
+	        //初始化line 宽度
+	        line.setAttribute("style", "width:" + $(".tab-head .tab-scroll .tab-head-item").eq(0).width() + "px;left:"+li_0.left+"px");
+
+	        //初始化tab-content高度 宽度
+	        tabCotent.setAttribute("style", "width:" + w * tabCount + "px; height:"+(cbody.offsetHeight - tabHead.offsetHeight) + "px");
+	   	}
+	    function getObjData(){
+	        var objdata_ajax; 
+	        $.ajax({
+	             type: 'GET',
+	             url: 'json/update.json',
+	             async: false,   
+	             dataType: 'json',
+	             success: function(data){
+	                objdata_ajax = data.lists;                   
+	                //console.info(objdata_ajax.length);
+	                //console.log(Object.keys(objdata[0]));   //参数idx表示点击选中的tab的index值                                      
+	             },
+	             error: function(xhr, type){
+	                 console.info('Ajax error!');
+	             }               
+	        });
+	        //console.info(objdata_ajax);
+	        return objdata_ajax;
+	    }
+	    function firstRenderTabContent(){
+
+       		$(".tab-content-scroll").each(function(idx,el){
+       			console.info(el);
+       			if($(el).find("ul").length == 0){
+       				console.info(el);
+       				$(el).append('<ul class="content_ul"><div class="pull-bottom-wrapper"><p class="pull-loading"><span></span></p></div></ul>');
+       				$(".tab-content-item").eq(idx).find(".pull-bottom-wrapper").show();
+       				if(!isload){
+		              setTimeout(function() {
+		                  console.info("首次渲染，1s后执行");
+		                  renderHtml(idx,function(){
+		                    $(".tab-content-item").eq(idx).find(".pull-bottom-wrapper").hide();
+		                  },true)
+		              }, 1000);
+		            }
+
+       			} else{
+	            	console.info("已经添加过ul");
+	        	}     			
+       		})           
+	    }
+	    function renderHtml(idx,fn,isFirst){
+	        var $pages=$(".tab-content-item").eq(idx).find(".tab-content-scroll");
+	        var arr = [];
+	        var len = objdata.length;
+	        len = 4;
+	        for (var i = 0; i < len; i++) {
+	            arr[i] = '<li class="list"><a href="javascript:void(0)"><div class="li_left"><img src="' + objdata[i].pic + '"></div>' + '<div class="li_right"><p class="li-title">' +idx+'***'+ objdata[i].title + '</p><span class="li-time">' + objdata[i].date + '</span></div></a></li>';
+	        }
+	        html = arr.join("");
+
+	        console.info( "list length= "+$pages.find("ul li").length);
+	        if(!isFirst){
+	          if($pages.find("ul li").length<=41){
+	            $pages.find(".content_ul").prepend(html);
+	          }else{
+	            console.info("没数据了");
+	          }
+	          
+	        }else {
+	          if ($pages.find("ul li").length === 0){                    
+	            $pages.find(".content_ul").prepend(html); 
+	          }
+	        }
+	        if(fn){
+	          fn();
+	        }
+
+	    }
+	</script>
+	</body>
+
+</html>
